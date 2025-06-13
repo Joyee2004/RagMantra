@@ -1,16 +1,16 @@
 import logging
 from langchain_ollama import ChatOllama
-from models.pdf_processor import PDFProcessor
-from models.vector_store import VectorStore
-from models.rag_chain import RAGChain
+from pdf_processor import PDFProcessor
+from vector_store import VectorStore
+from rag_chain import RAGChain
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-DOC_PATH = "Professional_Profile (1).pdf"
-MODEL_NAME = "mistral:7b-instruct"
+DOC_PATH = "temp.pdf"
+MODEL_NAME = "cas/nous-hermes-2-mistral-7b-dpo:latest"
 EMBEDDING_MODEL = "nomic-embed-text"
 VECTOR_STORE_NAME = "simple-rag"
 
