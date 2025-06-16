@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-DOC_PATH = "temp.pdf"
-MODEL_NAME = "cas/nous-hermes-2-mistral-7b-dpo:latest"
+DOC_PATH = "1.pdf"
+MODEL_NAME = "granite3.3:2b"
 EMBEDDING_MODEL = "nomic-embed-text"
 VECTOR_STORE_NAME = "simple-rag"
 
