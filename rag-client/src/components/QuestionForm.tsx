@@ -2,8 +2,26 @@ import { useState } from 'react';
 import { askQuestion } from '@/api/api';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AnimatePresence, motion } from 'motion/react';
-import { X } from 'lucide-react';
+import { ArrowDown, ArrowUp, X } from 'lucide-react';
 import ChatHistory from './ChatHistory';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface ChatEntry {
   question: string;
@@ -25,6 +43,12 @@ const QuestionForm = ({
   const [chatHistory, setChatHistory] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+
+  const clearChat = () => {
+    setChatHistory([]);
+    setShowDialog(false);
+  };
 
   const handleAsk = async () => {
     if (!question) {
@@ -44,7 +68,8 @@ const QuestionForm = ({
       setLoading(true);
       const answer = await askQuestion(question, selectedModel, controller.signal);
       setChatHistory(prev => [...prev, { question, response: answer }]);
-      setQuestion(''); // clear input
+      setQuestion('');
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     } catch (error) {
       setAlertMessage("Failed to get response.");
       console.error(error);
@@ -84,27 +109,7 @@ const QuestionForm = ({
         )}
       </AnimatePresence>
 
-      <ChatHistory chatHistory={chatHistory}></ChatHistory>
-
-
-      {loading && (
-        <div className="flex items-center gap-4 justify-center mt-4">
-          <div className="flex items-center gap-4">
-            <p className="mt-4 text-gray-600">Processing...</p>
-            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin" />
-          </div>
-          <button
-            onClick={() => {
-              abortController?.abort();
-              setLoading(false);
-            }}
-            className="cursor-pointer px-4 py-2 bg-gradient-to-r from-red-900 via-pink-900 to-orange-900 text-white rounded"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-
+      <ChatHistory chatHistory={chatHistory} />
 
       <form
         onSubmit={(e) => {
@@ -122,12 +127,53 @@ const QuestionForm = ({
         <button
           type="submit"
           disabled={loading}
-          className="bg-green-500 text-white px-12 py-2 rounded bg-gradient-to-r from-orange-400 from-10% via-pink-500 via-30% to-purple-500 to-90%"
+          className="bg-green-500 text-white px-12 py-2 rounded bg-gradient-to-r from-orange-400 from-10% via-pink-500 via-30% to-purple-500 to-90% flex items-center justify-center gap-2"
         >
-          Ask
+          {loading ? 'Getting_Response...' : 'Ask'}
         </button>
+        {loading && (
+          <button
+            onClick={() => {
+              abortController?.abort();
+              setLoading(false);
+            }}
+            className="cursor-pointer px-4 py-2 bg-gradient-to-r from-red-900 via-pink-900 to-orange-900 text-white rounded"
+          >
+            Cancel
+          </button>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger className='border-2 border-white px-4 rounded-md'>More</DropdownMenuTrigger>
+          <DropdownMenuContent className='bg-black text-white'>
+            <DropdownMenuLabel>More</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              Top <ArrowUp className="ml-2" />
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+              Bottom <ArrowDown className="ml-2" />
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowDialog(true)}>
+              Clear Chat
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </form>
 
+      <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+        <AlertDialogContent className='bg-black text-white'>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to clear chat?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your chat.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowDialog(false)} className='text-black'>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={clearChat}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
