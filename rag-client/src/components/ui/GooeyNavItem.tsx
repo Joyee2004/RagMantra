@@ -21,7 +21,7 @@ const GooeyNav: React.FC<GooeyNavProps> = ({
   items= [
         { label: "Chat", href: "/chat" },
         { label: "Home", href: "/" },
-        { label: "About", href: "#" },],
+        { label: "About", href: "/about" },],
   animationTime = 600,
   particleCount = 15,
   particleDistances = [90, 10],

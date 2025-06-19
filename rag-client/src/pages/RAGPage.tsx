@@ -7,11 +7,9 @@ import GooeyNav from '@/components/ui/GooeyNavItem';
 const RAGPage = () => {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [question, setQuestion] = useState('');
-    const [response, setResponse] = useState('');
-    const [loading, setLoading] = useState(false);
     const [selectedModel, setSelectedModel] = useState<string>('');
     const [isUploaded, setIsUploaded] = useState(false);
-    const [abortController, setAbortController] = useState<AbortController | null>(null);
+    
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-start p-6 pt-32 relative">
@@ -40,9 +38,7 @@ const RAGPage = () => {
                     pdfFile={pdfFile}
                     setPdfFile={setPdfFile}
                     selectedModel={selectedModel}
-                    setLoading={setLoading}
                     onUploadSuccess={() => setIsUploaded(true)}
-                    setAbortController={setAbortController}
                 />
             </div>
 
@@ -51,27 +47,7 @@ const RAGPage = () => {
                     question={question}
                     setQuestion={setQuestion}
                     selectedModel={selectedModel}
-                    setResponse={setResponse}
-                    loading={loading}
-                    setLoading={setLoading}
-                    response={response}
-                    setAbortController={setAbortController}
                 />
-            )}
-
-            {loading && (
-                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50 space-y-4">
-                    <div className="w-16 h-16 border-4 border-t-transparent border-white rounded-full animate-spin mb-16"></div>
-                    <button
-                        className="cursor-pointer px-4 py-2 bg-gradient-to-r from-red-900 from-40% via-pink-900 via-30% to-orange-900 to-10% text-white rounded"
-                        onClick={() => {
-                            abortController?.abort();
-                            setLoading(false);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>
             )}
         </div>
     );
