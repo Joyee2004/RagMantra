@@ -97,16 +97,3 @@ Note : Download model as per your task and hardware requirements.
 Here's a short demonstration of our project
 Insert gif or link to demo
 
-
-## 🙌 Credits
-
-💥 Frontend, Backend & Docker by Harshit
-This project owes a huge shout-out to Harshit, who designed and implemented:
-
-An intuitive and clean frontend interface
-
-A scalable FastAPI backend for the LangChain pipeline
-
-A production-ready Docker setup for easy deployment
-
-🎯 Thanks to Harshit’s meticulous design, RAGMantra isn't just powerful — it's beautifully usable and developer-friendly out of the box.
