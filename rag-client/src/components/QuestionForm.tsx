@@ -31,13 +31,13 @@ interface ChatEntry {
 interface QuestionFormProps {
   question: string;
   setQuestion: (question: string) => void;
-  selectedModel: string;
+  selectedChatModel: string;
 }
 
 const QuestionForm = ({
   question,
   setQuestion,
-  selectedModel,
+  selectedChatModel,
 }: QuestionFormProps) => {
   const [alertMessage, setAlertMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatEntry[]>([]);
@@ -55,7 +55,7 @@ const QuestionForm = ({
       setAlertMessage("Please enter a question.");
       return;
     }
-    if (!selectedModel) {
+    if (!selectedChatModel) {
       setAlertMessage("Please select a model.");
       return;
     }
@@ -66,7 +66,7 @@ const QuestionForm = ({
     try {
       setAlertMessage('');
       setLoading(true);
-      const answer = await askQuestion(question, selectedModel, controller.signal);
+      const answer = await askQuestion(question, selectedChatModel, controller.signal);
       setChatHistory(prev => [...prev, { question, response: answer }]);
       setQuestion('');
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });

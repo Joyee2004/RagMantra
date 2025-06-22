@@ -2,31 +2,34 @@ import { useEffect, useState } from 'react';
 import { fetchModels } from '@/api/api';
 
 interface ModelSelectorProps {
-  selectedModel: string;
-  setSelectedModel: (model: string) => void;
+  selectedChatModel: string;
+  setSelectedChatModel: (model: string) => void;
+  selectedEmbedModel: string;
+  setSelectedEmbedModel: (model: string) => void;
 }
 
-// List of models to exclude (embedding models, not chat-compatible)
-const EXCLUDED_MODELS = ['nomic-embed-text'];
-
-const ModelSelector = ({ selectedModel, setSelectedModel }: ModelSelectorProps) => {
-  const [models, setModels] = useState<string[]>([]);
+const ModelSelector = ({
+  selectedChatModel,
+  setSelectedChatModel,
+  selectedEmbedModel,
+  setSelectedEmbedModel,
+}: ModelSelectorProps) => {
+  const [chatModels, setChatModels] = useState<string[]>([]);
+  const [embedModels, setEmbedModels] = useState<string[]>([]);
 
   useEffect(() => {
     const loadModels = async () => {
       try {
-        const modelList = await fetchModels();
+        const data = await fetchModels();
+        setChatModels(data.chat_models || []);
+        setEmbedModels(data.embedding_models || []);
 
-        // Filter out models that include any of the excluded keywords
-        const filteredModels = modelList.filter(
-          (model) =>
-            !EXCLUDED_MODELS.some((excluded) => model.toLowerCase().includes(excluded))
-        );
+        if (data.chat_models?.length && !selectedChatModel) {
+          setSelectedChatModel(data.chat_models[0]);
+        }
 
-        setModels(filteredModels);
-
-        if (filteredModels.length > 0 && !selectedModel) {
-          setSelectedModel(filteredModels[0]);
+        if (data.embedding_models?.length && !selectedEmbedModel) {
+          setSelectedEmbedModel(data.embedding_models[0]);
         }
       } catch (err) {
         console.error('Failed to load models', err);
@@ -37,20 +40,40 @@ const ModelSelector = ({ selectedModel, setSelectedModel }: ModelSelectorProps) 
   }, []);
 
   return (
-    <div className="mb-4 px-16 mt-16">
-      <label className="block font-semibold mb-1 text-white px-40">Select Model:</label>
-      <select
-        value={selectedModel}
-        onChange={(e) => setSelectedModel(e.target.value)}
-        className="w-full border-2 border-white px-3 py-2 rounded"
-      >
-        {models.map((model) => (
-          <option key={model} value={model}>
-            {model}
-          </option>
-        ))}
-      </select>
+    <div className="mb-4 px-16 mt-8 flex justify-between gap-8">
+      {/* Left (Chat Model) */}
+      <div>
+        <label className="block font-semibold mb-1 text-white">Select Chat Model:</label>
+        <select
+          value={selectedChatModel}
+          onChange={(e) => setSelectedChatModel(e.target.value)}
+          className="w-full border-2 border-white px-3 py-2 rounded"
+        >
+          {chatModels.map((model) => (
+            <option key={model} value={model}>
+              {model}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Right (Embedding Model) */}
+      <div>
+        <label className="block font-semibold mb-1 text-white">Select Embedding Model:</label>
+        <select
+          value={selectedEmbedModel}
+          onChange={(e) => setSelectedEmbedModel(e.target.value)}
+          className="w-full border-2 border-white px-3 py-2 rounded"
+        >
+          {embedModels.map((model) => (
+            <option key={model} value={model}>
+              {model}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
+
   );
 };
 
