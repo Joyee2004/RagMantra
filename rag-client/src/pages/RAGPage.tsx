@@ -8,7 +8,8 @@ import GooeyNav from '@/components/ui/GooeyNavItem';
 const RAGPage = () => {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [question, setQuestion] = useState('');
-    const [selectedModel, setSelectedModel] = useState<string>('');
+    const [selectedChatModel, setSelectedChatModel] = useState<string>('');
+    const [selectedEmbedModel, setSelectedEmbedModel] = useState<string>('');
     const [isUploaded, setIsUploaded] = useState(false);
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-start p-6 pt-32 relative">
@@ -17,7 +18,7 @@ const RAGPage = () => {
                 <GooeyNav />
             </div>
 
-            <h1 className="text-3xl font-bold mb-6 mt-6">RAG PDF Chat</h1>
+            <h1 className="text-3xl font-bold mb-6 mt-6">RAGMantra Chat</h1>
 
             <div className="grid md:grid-cols-2 gap-4">
                 <div className="flex flex-col items-center justify-center">
@@ -28,15 +29,18 @@ const RAGPage = () => {
                         Drag or drop your files here or click to upload
                     </p>
                     <ModelSelector
-                        selectedModel={selectedModel}
-                        setSelectedModel={setSelectedModel}
+                        selectedChatModel={selectedChatModel}
+                        setSelectedChatModel={setSelectedChatModel}
+                        selectedEmbedModel={selectedEmbedModel}
+                        setSelectedEmbedModel={setSelectedEmbedModel}
                     />
                 </div>
 
                 <PDFUploader
                     pdfFile={pdfFile}
                     setPdfFile={setPdfFile}
-                    selectedModel={selectedModel}
+                    selectedChatModel={selectedChatModel}
+                    selectedEmbedModel={selectedEmbedModel}
                     onUploadSuccess={() => setIsUploaded(true)}
                 />
             </div>
@@ -45,7 +49,7 @@ const RAGPage = () => {
                 <QuestionForm
                     question={question}
                     setQuestion={setQuestion}
-                    selectedModel={selectedModel}
+                    selectedChatModel={selectedChatModel}
                 />
             )}
         </div>

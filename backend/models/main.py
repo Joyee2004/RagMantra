@@ -36,18 +36,25 @@ async def list_models():
         result = subprocess.run(["ollama", "list"], capture_output=True, text=True, check=True)
         lines = result.stdout.strip().splitlines()
 
-        model_names = []
-        for line in lines[1:]:
-            name = line.split()[0]  # Extract the model name
-            model_names.append(name)
+        model_names = [line.split()[0] for line in lines[1:]]
 
-        return JSONResponse(content={"models": model_names})
+        chat_models = [name for name in model_names if "embed" not in name.lower()]
+        embedding_models = [name for name in model_names if "embed" in name.lower()]
+
+        return JSONResponse(content={
+            "chat_models": chat_models,
+            "embedding_models": embedding_models
+        })
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 @app.post("/upload")
-async def upload_pdf(file: UploadFile = File(...), model: str = Form(...)):
+async def upload_pdf(
+    file: UploadFile = File(...), 
+    model: str = Form(...), 
+    embed_model: str = Form(...)
+):
     with open("uploaded.pdf", "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -56,14 +63,18 @@ async def upload_pdf(file: UploadFile = File(...), model: str = Form(...)):
 
     global vector_db, vector_store, chain, llm
 
-    vector_store = VectorStore("nomic-embed-text", "simple-rag")
+    vector_store = VectorStore(embed_model, "simple-rag")  
     vector_db = vector_store.create_vector_db(chunks)
 
-    llm = ChatOllama(model=model)  
+    llm = ChatOllama(model=model)
     retriever = rag_chain.create_retriever(vector_db, llm)
     chain = rag_chain.create_chain(retriever, llm)
 
-    return {"message": f"PDF uploaded and processed using model: {model}"}
+    return {
+        "chat_model": model,
+        "embedding_model": embed_model,
+        "message": "PDF uploaded and processed successfully."
+    }
 
 
 @app.post("/ask")

@@ -8,14 +8,16 @@ import { AnimatePresence, motion } from 'motion/react';
 interface PDFUploaderProps {
   pdfFile: File | null;
   setPdfFile: (file: File | null) => void;
-  selectedModel: string;
+  selectedChatModel: string;
+  selectedEmbedModel: string;
   onUploadSuccess: () => void;
 }
 
 const PDFUploader = ({
   pdfFile,
   setPdfFile,
-  selectedModel,
+  selectedChatModel,
+  selectedEmbedModel,
   onUploadSuccess,
 }: PDFUploaderProps) => {
   const [alertMessage, setAlertMessage] = useState('');
@@ -30,8 +32,13 @@ const PDFUploader = ({
       return;
     }
 
-    if (!selectedModel) {
-      triggerAlert('Please select a model.', 'destructive');
+    if (!selectedChatModel) {
+      triggerAlert('Please select a chat model.', 'destructive');
+      return;
+    }
+
+    if (!selectedEmbedModel) {
+      triggerAlert('Please select a embedding model.', 'destructive');
       return;
     }
 
@@ -40,12 +47,14 @@ const PDFUploader = ({
 
     try {
       setLoading(true);
-      const message = await uploadFile(pdfFile, selectedModel, controller.signal);
-      triggerAlert(message, 'default');
-      onUploadSuccess(); // notify parent
+      const response = await uploadFile(pdfFile, selectedChatModel, selectedEmbedModel, controller.signal);
+
+      const formattedMessage = `${response.message}\nChat Model: ${response.chat_model}\nEmbedding Model: ${response.embedding_model}`;
+
+      triggerAlert(formattedMessage, 'default');
+      onUploadSuccess();
     } catch (error) {
       triggerAlert('Upload failed.', 'destructive');
-      console.error(error);
     } finally {
       setLoading(false);
       setAbortController(null);
