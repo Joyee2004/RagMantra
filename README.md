@@ -87,13 +87,12 @@ Steps to set up Ollama:
 Note : Download model as per your task and hardware requirements.
 3. To see the list of downloaded models:
     `ollama list`
-
-
-
-
-
 ## Demo
 
 Here's a short demonstration of our project
 Insert gif or link to demo
+
+## Creators
+Harshit Gangwar : https://github.com/harshit-G51102
+Joyee Biswas : https://github.com/Joyee2004
 
